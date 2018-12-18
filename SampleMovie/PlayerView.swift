@@ -50,9 +50,6 @@ class PlayerView: UIView {
         self.player = player
         self.playerLayer.player = player
 
-        let center = NotificationCenter.default
-        center.addObserver(self, selector: #selector(applicationWillEnterForegroundNotification(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
-        center.addObserver(self, selector: #selector(playerItemDidPlayToEndTimeNotification(_:)), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
     }
 
     func play() {
@@ -75,6 +72,10 @@ class PlayerView: UIView {
         if let observer = self.periodicTimeObserver {
             self.player?.removeTimeObserver(observer)
             self.periodicTimeObserver = nil
+        }
+
+        if let currentTime = self.player?.currentTime() {
+            self.currentTime = CMTimeGetSeconds(currentTime)
         }
     }
 
@@ -117,6 +118,10 @@ class PlayerView: UIView {
 
     private func setup() {
         self.playerLayer.videoGravity = .resizeAspect
+        
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(applicationWillEnterForegroundNotification(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+        center.addObserver(self, selector: #selector(playerItemDidPlayToEndTimeNotification(_:)), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
     }
 
 }
